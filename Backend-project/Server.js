@@ -10,7 +10,7 @@ const payementRouter = require('./routes/payement');
 const slotRouter = require('./routes/Slot');
 
 const app = express();
-const PORT = 5000;
+const PORT = 4000;
 
 // Middleware
 app.use(cors({

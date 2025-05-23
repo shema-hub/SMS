@@ -25,7 +25,7 @@ function ReportPage() {
       <h2 className="text-2xl font-bold mb-4">Reports</h2>
       <input type="text" placeholder="Search by Plate Number" className="input w-full mb-4" value={plate} onChange={(e) => setPlate(e.target.value)} />
       <button className="bg-blue-600 text-white px-4 py-2 mb-4 rounded" onClick={filterByPlate}>Filter</button>
-
+      <button onClick={() => window.print()}>Print</button>
       <table className="w-full border">
         <thead className="bg-gray-200">
           <tr><th>Plate</th><th>Entry</th><th>Exit</th><th>Duration (hrs)</th></tr>
