@@ -1,39 +1,10 @@
 const express = require('express');
-const session = require('express-session');
-const cors = require('cors');
-const { default: mongoose } = require('mongoose');
-const Admin = require('./Models/Admin');
-const bcrypt = require('bcrypt');
+const Admin = require('../Models/Admin');
 
-const app = express();
-const PORT = 4000;
+const router = express.Router();
 
-// Middleware
-app.use(cors({
-  origin: 'http://localhost:5173', // frontend dev server
-  credentials: true,
-}));
-app.use(express.json()); // to parse JSON bodies
-
-app.use(session({
-  secret: 'your-secret-key', // replace with a strong secret in production
-  resave: false,
-  saveUninitialized: false,
-  cookie: {
-    httpOnly: true,
-    maxAge: 1000 * 60 * 60 * 24, // 1 day
-  },
-}));
-
-mongoose.connect('mongodb://localhost:27017/PSSMS')
-  .then(() => console.log('MongoDB connected'))
-  .catch(err => console.error('MongoDB connection error:', err));
-
-
-
-  
-
-app.post('/api/auth/register', async (req, res) => {
+// Register route
+router.post('/register', async (req, res) => {
   const { email, password } = req.body;
   if (!email || !password) {
     return res.status(400).json({ message: 'Email and password are required' });
@@ -56,7 +27,8 @@ app.post('/api/auth/register', async (req, res) => {
   }
 });
 
-app.post('/api/auth/login', async (req, res) => {
+// Login route
+router.post('/login', async (req, res) => {
   const { email, password } = req.body;
   if (!email || !password) {
     return res.status(400).json({ message: 'Email and password are required' });
@@ -78,7 +50,8 @@ app.post('/api/auth/login', async (req, res) => {
   }
 });
 
-app.post('/api/auth/logout', (req, res) => {
+// Logout route
+router.post('/logout', (req, res) => {
   req.session.destroy(err => {
     if (err) {
       console.error('Logout error:', err);
@@ -89,6 +62,4 @@ app.post('/api/auth/logout', (req, res) => {
   });
 });
 
-app.listen(PORT, () => {
-  console.log(`Server is running on ${PORT}`);
-});
+module.exports = router;

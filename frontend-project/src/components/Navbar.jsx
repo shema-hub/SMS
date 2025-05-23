@@ -1,4 +1,5 @@
 import React from 'react';
+import { Outlet,Link } from 'react-router-dom';
 
 export default function Navbar({ onLogout }) {
   const handleLogout = async () => {
@@ -19,10 +20,17 @@ export default function Navbar({ onLogout }) {
 
   return (
     <nav className="bg-blue-600 text-white p-4 flex justify-between items-center">
-      <div className="text-lg font-bold">Admin Panel</div>
+      <Link to="/Home">Home</Link>
+      <Link to="/Car">Car</Link>
+      <Link to="/Slot">Slot</Link>
+      <Link to="/Record">Record</Link>
+      <Link to="/Payment">Payement</Link>
+      <Link to="/Report">Report</Link>
+
+
       <button
         onClick={handleLogout}
-        className="bg-red-500 hover:bg-red-600 px-3 py-1 rounded"
+        className="bg-gray-500 hover:bg-red-600 px-3 py-1 rounded"
       >
         Logout
       </button>

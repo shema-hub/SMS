@@ -1,7 +1,13 @@
 import React, { useState, useEffect } from 'react';
+import { BrowserRouter as Router, Routes, Route, Navigate, BrowserRouter } from 'react-router-dom';
 import Login from './components/Login';
 import Register from './components/Register';
 import Navbar from './components/Navbar';
+import Car from './Pages/Car';
+import Slot from './Pages/Slot';
+import Report from './Pages/Report';
+import Record from './Pages/Record';
+import Payement from './Pages/Payement';
 
 export default function App() {
   const [user, setUser] = useState(null);
@@ -31,48 +37,52 @@ export default function App() {
     setUser(null);
   };
 
-  return (
-    <>
-      {user ? (
-        <>
-          <Navbar onLogout={handleLogout} />
-          <div className="p-4">
-            <h1 className="text-2xl font-bold">Welcome, {user.email}</h1>
-            {/* Admin content goes here */}
-          </div>
-        </>
-      ) : (
-        <>
+  if (!user) {
+    return (
+      <>
+        {showRegister ? (
+          <Register onRegister={handleRegister} />
+        ) : (
+          <Login onLogin={handleLogin} />
+        )}
+        <div className="text-center mt-4">
           {showRegister ? (
-            <Register onRegister={handleRegister} />
+            <p>
+              Already have an account?{' '}
+              <button
+                className="text-blue-600 underline"
+                onClick={() => setShowRegister(false)}
+              >
+                Login
+              </button>
+            </p>
           ) : (
-            <Login onLogin={handleLogin} />
+            <p>
+              Don't have an account?{' '}
+              <button
+                className="text-blue-600 underline"
+                onClick={() => setShowRegister(true)}
+              >
+                Register
+              </button>
+            </p>
           )}
-          <div className="text-center mt-4">
-            {showRegister ? (
-              <p>
-                Already have an account?{' '}
-                <button
-                  className="text-blue-600 underline"
-                  onClick={() => setShowRegister(false)}
-                >
-                  Login
-                </button>
-              </p>
-            ) : (
-              <p>
-                Don't have an account?{' '}
-                <button
-                  className="text-blue-600 underline"
-                  onClick={() => setShowRegister(true)}
-                >
-                  Register
-                </button>
-              </p>
-            )}
-          </div>
-        </>
-      )}
-    </>
+        </div>
+      </>
+    );
+  }
+
+  return (
+    <BrowserRouter>
+      <Navbar onLogout={handleLogout} />
+      <Routes>
+        <Route path="/" element={<Navigate to="/car" replace />} />
+        <Route path="/car" element={<Car />} />
+        <Route path="/slot" element={<Slot />} />
+        <Route path="/report" element={<Report />} />
+        <Route path="/record" element={<Record />} />
+        <Route path="/payement" element={<Payement />} />
+      </Routes>
+    </BrowserRouter>
   );
 }
