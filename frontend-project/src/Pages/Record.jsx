@@ -6,6 +6,7 @@ function RecordPage() {
   const [form, setForm] = useState({ car: '', slot: '', entryTime: '', exitTime: '' });
   const [cars, setCars] = useState([]);
   const [slots, setSlots] = useState([]);
+  const [editingId, setEditingId] = useState(null);
 
   const fetchAll = async () => {
     const [carRes, slotRes, recordRes] = await Promise.all([
@@ -20,9 +21,38 @@ function RecordPage() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    await axios.post('http://localhost:5000/api/records', form);
+    if (editingId) {
+      // Update existing record
+      await axios.put(`http://localhost:5000/api/records/${editingId}`, form);
+      setEditingId(null);
+    } else {
+      // Create new record
+      await axios.post('http://localhost:5000/api/records', form);
+    }
     setForm({ car: '', slot: '', entryTime: '', exitTime: '' });
     fetchAll();
+  };
+
+  const handleEdit = (record) => {
+    setEditingId(record._id);
+    setForm({
+      car: record.car?._id || '',
+      slot: record.slot?._id || '',
+      entryTime: record.entryTime ? new Date(record.entryTime).toISOString().slice(0,16) : '',
+      exitTime: record.exitTime ? new Date(record.exitTime).toISOString().slice(0,16) : '',
+    });
+  };
+
+  const handleDelete = async (id) => {
+    if (window.confirm('Are you sure you want to delete this record?')) {
+      await axios.delete(`http://localhost:5000/api/records/${id}`);
+      fetchAll();
+    }
+  };
+
+  const handleCancelEdit = () => {
+    setEditingId(null);
+    setForm({ car: '', slot: '', entryTime: '', exitTime: '' });
   };
 
   useEffect(() => {
@@ -47,12 +77,21 @@ function RecordPage() {
         </select>
         <input type="datetime-local" className="input w-full" value={form.entryTime} onChange={(e) => setForm({ ...form, entryTime: e.target.value })} required />
         <input type="datetime-local" className="input w-full" value={form.exitTime} onChange={(e) => setForm({ ...form, exitTime: e.target.value })} />
-        <button type="submit" className="bg-green-600 text-white py-2 px-4 rounded">Add Record</button>
+        <div className="flex space-x-2">
+          <button type="submit" className="bg-green-600 text-white py-2 px-4 rounded">
+            {editingId ? 'Update Record' : 'Add Record'}
+          </button>
+          {editingId && (
+            <button type="button" onClick={handleCancelEdit} className="bg-gray-600 text-white py-2 px-4 rounded">
+              Cancel
+            </button>
+          )}
+        </div>
       </form>
 
       <table className="w-full border">
         <thead className="bg-gray-200">
-          <tr><th>Plate</th><th>Slot</th><th>Entry</th><th>Exit</th></tr>
+          <tr><th>Plate</th><th>Slot</th><th>Entry</th><th>Exit</th><th>Actions</th></tr>
         </thead>
         <tbody>
           {records.map(rec => (
@@ -61,6 +100,10 @@ function RecordPage() {
               <td>{rec.slot?.slotNumber || 'N/A'}</td>
               <td>{new Date(rec.entryTime).toLocaleString()}</td>
               <td>{rec.exitTime ? new Date(rec.exitTime).toLocaleString() : '—'}</td>
+              <td>
+                <button onClick={() => handleEdit(rec)} className="bg-blue-600 text-white py-1 px-2 rounded mr-2">Edit</button>
+                <button onClick={() => handleDelete(rec._id)} className="bg-red-600 text-white py-1 px-2 rounded">Delete</button>
+              </td>
             </tr>
           ))}
         </tbody>

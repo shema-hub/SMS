@@ -4,9 +4,13 @@ const cors = require('cors');
 const { default: mongoose } = require('mongoose');
 const Admin = require('./Models/Admin');
 const bcrypt = require('bcrypt');
+const recordRouter = require('./routes/record');
+const carRouter = require('./routes/Car');
+const payementRouter = require('./routes/payement');
+const slotRouter = require('./routes/Slot');
 
 const app = express();
-const PORT = 4000;
+const PORT = 5000;
 
 // Middleware
 app.use(cors({
@@ -88,6 +92,11 @@ app.post('/api/auth/logout', (req, res) => {
     res.json({ message: 'Logged out successfully' });
   });
 });
+
+app.use('/api/records', recordRouter);
+app.use('/api/cars', carRouter);
+app.use('/api/payements', payementRouter);
+app.use('/api/slots', slotRouter);
 
 app.listen(PORT, () => {
   console.log(`Server is running on ${PORT}`);
