@@ -36,14 +36,17 @@ app.post('/api/auth/register', async (req, res) => {
     return res.status(400).json({ message: 'Email and password are required' });
   }
   try {
+    const adminCount = await Admin.countDocuments();
+    if (adminCount >= 3) {
+      return res.status(403).json({ message: 'Registration limit reached' });
+    }
     const existingAdmin = await Admin.findOne({ email });
     if (existingAdmin) {
       return res.status(409).json({ message: 'Email already registered' });
     }
     const newAdmin = new Admin({ email, password });
     await newAdmin.save();
-    req.session.adminId = newAdmin._id;
-    res.status(201).json({ user: { email: newAdmin.email } });
+    res.status(201).json({ message: 'Registration successful, please login' });
   } catch (err) {
     console.error('Registration error:', err);
     res.status(500).json({ message: 'Internal server error' });

@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
 
-export default function Login({ onLogin }) {
+export default function Register({ onRegister }) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
@@ -10,7 +9,7 @@ export default function Login({ onLogin }) {
     e.preventDefault();
     setError('');
     try {
-      const response = await fetch('http://localhost:4000/api/auth/login', {
+      const response = await fetch('http://localhost:4000/api/auth/register', {
         method: 'POST',
         credentials: 'include',
         headers: {
@@ -19,11 +18,11 @@ export default function Login({ onLogin }) {
         body: JSON.stringify({ email, password }),
       });
       if (response.ok) {
-        const data = await response.json();
-        onLogin(data.user);
+        await response.json();
+        onRegister();
       } else {
         const errData = await response.json();
-        setError(errData.message || 'Login failed');
+        setError(errData.message || 'Registration failed');
       }
     } catch {
       setError('Network error');
@@ -33,7 +32,7 @@ export default function Login({ onLogin }) {
   return (
     <div className="flex items-center justify-center min-h-screen bg-gray-100">
       <form onSubmit={handleSubmit} className="bg-white p-8 rounded shadow-md w-full max-w-sm">
-        <h2 className="text-2xl font-bold mb-6 text-center">Admin Login</h2>
+        <h2 className="text-2xl font-bold mb-6 text-center">Register</h2>
         {error && <p className="text-red-500 mb-4">{error}</p>}
         <div className="mb-4">
           <label className="block mb-1 font-semibold" htmlFor="email">Email</label>
@@ -56,27 +55,27 @@ export default function Login({ onLogin }) {
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             required
-            autoComplete="current-password"
+            autoComplete="new-password"
           />
         </div>
         <button
           type="submit"
-          className="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700 transition"
+          className="w-full bg-green-600 text-white py-2 rounded hover:bg-green-700 transition"
         >
-          Login
+          Register
         </button>
         <p className="mt-4 text-center">
-          Don't have an account?{' '}
+          Already have an account?{' '}
           <button
             type="button"
             className="text-blue-600 underline"
             onClick={() => {
               if (typeof window !== 'undefined' && window.dispatchEvent) {
-                window.dispatchEvent(new CustomEvent('showRegister'));
+                window.dispatchEvent(new CustomEvent('showLogin'));
               }
             }}
           >
-            Register
+            Login
           </button>
         </p>
       </form>
